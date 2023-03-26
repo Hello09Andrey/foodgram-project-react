@@ -4,7 +4,7 @@ from rest_framework import serializers
 
 
 def validate_username(value):
-    regex = r'^[\w.@+-]+\$'
+    regex = r'^[\w.@+-]+$'
     if re.match(regex, value) is None:
         raise serializers.ValidationError(
             'Вы использовали запрещенные символы'
