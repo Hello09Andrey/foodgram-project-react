@@ -70,11 +70,11 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(CustomUserSerializer):
     recipes_count = SerializerMethodField()
-    recipe = SerializerMethodField()
+    recipes = SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
 
-        fields = CustomUserSerializer.Meta.fields + ('recipes_count', 'recipe')
+        fields = CustomUserSerializer.Meta.fields + ('recipes_count', 'recipes')
         read_only_fields = ('email', 'username')
 
     def validate(self, data):
@@ -95,7 +95,7 @@ class FollowSerializer(CustomUserSerializer):
     def get_recipes_count(self, obj):
         return obj.recipes.count()
 
-    def get_recipe(self, obj):
+    def get_recipes(self, obj):
         serializer = RecipeShortSerializer(
             obj.recipes.all(),
             many=True,

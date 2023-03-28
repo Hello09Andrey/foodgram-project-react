@@ -4,10 +4,11 @@ from rest_framework import viewsets
 from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
+from api.filters import RecipeFilter
 from api.serializers import (
     FollowSerializer,
     CustomUserSerializer,
@@ -27,15 +28,15 @@ from recipes.models import (
     ShoppingCart,
 )
 from api.utils import get_shopping_cart
+from api.permissions import IsAuthorOrReadOnlyPermission
 
 
 class CustomUserViewSet(UserViewSet):
+    """Работа с User и подписка на авторов"""
+
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAuthenticated,)
-    # @action(detail=True, url_path='me')
-    # def get_serializer_class(self):
-    #     return CustomUserSerializer
+    permission_classes = (IsAuthorOrReadOnlyPermission,)
 
     @action(
         detail=False,
@@ -53,13 +54,12 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=['post', 'delete'],
+        methods=('post', 'delete'),
         permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, **kwargs):
         user = request.user
-        author_id = self.kwargs.get('id')
-        author = get_object_or_404(CustomUser, id=author_id)
+        author = get_object_or_404(CustomUser, id=self.kwargs.get('id'))
 
         if request.method == 'POST':
             serializer = FollowSerializer(
@@ -79,20 +79,27 @@ class CustomUserViewSet(UserViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
 
 
-class TagViewSet(viewsets.ModelViewSet):
+class TagViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Tags.objects.all()
     serializer_class = TagsSerializer
     pagination_class = None
+    permission_classes = (AllowAny,)
 
 
-class IngredientsViewSet(viewsets.ModelViewSet):
+class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('^name',)
+    pagination_class = None
+    permission_classes = (AllowAny,)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipes.objects.all()
     filter_backends = (DjangoFilterBackend,)
+    filterset_class = RecipeFilter
+    permission_classes = (IsAuthorOrReadOnlyPermission,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
