@@ -18,7 +18,10 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    '*',
+    '127.0.0.1',
+]
 
 LEN_NAME_IN_STR = 50
 
@@ -36,6 +39,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    'django_filters',
 ]
 
 MIDDLEWARE = [

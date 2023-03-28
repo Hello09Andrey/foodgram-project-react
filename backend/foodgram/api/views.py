@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
+from django_filters.rest_framework import DjangoFilterBackend
 
 from api.serializers import (
     FollowSerializer,
@@ -31,10 +32,10 @@ from api.utils import get_shopping_cart
 class CustomUserViewSet(UserViewSet):
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-
-    @action(detail=True, url_path='me')
-    def get_serializer_class(self):
-        return CustomUserSerializer
+    permission_classes = (IsAuthenticated,)
+    # @action(detail=True, url_path='me')
+    # def get_serializer_class(self):
+    #     return CustomUserSerializer
 
     @action(
         detail=False,
@@ -53,7 +54,7 @@ class CustomUserViewSet(UserViewSet):
     @action(
         detail=True,
         methods=['post', 'delete'],
-        permission_classes=[IsAuthenticated]
+        permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, **kwargs):
         user = request.user
@@ -91,6 +92,7 @@ class IngredientsViewSet(viewsets.ModelViewSet):
 
 class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipes.objects.all()
+    filter_backends = (DjangoFilterBackend,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):

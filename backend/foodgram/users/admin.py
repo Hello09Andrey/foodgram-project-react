@@ -9,6 +9,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         'username',
         'first_name',
         'last_name',
+        'password',
     )
     list_filter = ('email', 'username')
 
