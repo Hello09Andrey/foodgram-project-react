@@ -80,6 +80,8 @@ class CustomUserViewSet(UserViewSet):
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
+    """Работа с объектами Tag"""
+
     queryset = Tags.objects.all()
     serializer_class = TagsSerializer
     pagination_class = None
@@ -87,6 +89,8 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
+    """Работа с объектами Ingredients"""
+
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
     filter_backends = (filters.SearchFilter,)
@@ -96,6 +100,8 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
+    """Работа с объектами Recipes"""
+
     queryset = Recipes.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter

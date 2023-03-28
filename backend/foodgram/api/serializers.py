@@ -18,6 +18,7 @@ from recipes.models import (
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
+    """Сериализатор для создания объекта User"""
 
     class Meta:
         model = CustomUser
@@ -34,6 +35,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
 
 
 class CustomUserSerializer(UserSerializer):
+    """Cериализатор модели User"""
 
     is_subscribed = serializers.SerializerMethodField()
 
@@ -56,6 +58,11 @@ class CustomUserSerializer(UserSerializer):
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
+    """
+    Вспомогательный сериализатор для FollowSerializer,
+    FavoriteSerializer, ShoppingListSerializer
+    """
+
     image = Base64ImageField()
 
     class Meta:
@@ -69,12 +76,17 @@ class RecipeShortSerializer(serializers.ModelSerializer):
 
 
 class FollowSerializer(CustomUserSerializer):
+    """Сериализатор подпищиков"""
+
     recipes_count = SerializerMethodField()
     recipes = SerializerMethodField()
 
     class Meta(CustomUserSerializer.Meta):
 
-        fields = CustomUserSerializer.Meta.fields + ('recipes_count', 'recipes')
+        fields = CustomUserSerializer.Meta.fields + (
+            'recipes_count',
+            'recipes'
+        )
         read_only_fields = ('email', 'username')
 
     def validate(self, data):
@@ -105,18 +117,24 @@ class FollowSerializer(CustomUserSerializer):
 
 
 class TagsSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Tag"""
+
     class Meta:
         fields = '__all__'
         model = Tags
 
 
 class IngredientsSerializer(serializers.ModelSerializer):
+    """Сериализатор модели Ingredients"""
+
     class Meta:
         fields = '__all__'
         model = Ingredients
 
 
 class RecipesGetSerializer(serializers.ModelSerializer):
+    """Сериализатор для получения рецептов"""
+
     tags = TagsSerializer(many=True, read_only=True)
     is_favorited = SerializerMethodField(read_only=True)
     is_in_shopping_cart = SerializerMethodField()
@@ -164,6 +182,7 @@ class RecipesGetSerializer(serializers.ModelSerializer):
 
 
 class AddIngredientInSerializer(serializers.ModelSerializer):
+    """Вспомогательный сериализатор для RecipesCreateSerializer"""
 
     id = serializers.PrimaryKeyRelatedField(
         queryset=Ingredients.objects.all()
