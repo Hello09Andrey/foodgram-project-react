@@ -15,7 +15,7 @@ services:
       - .env
 
   web:
-    image: andreybelousov/foofgram:latest
+    image: andreybelousov/foodgram_back:latest
     restart: always
     volumes:
       - static_value:/app/static/
@@ -26,7 +26,7 @@ services:
       - .env 
 
   frontend:
-    build: ../frontend/
+    image: andreybelousov/foodgram_front:latest
     volumes:
       - ../frontend/:/app/result_build/
 
