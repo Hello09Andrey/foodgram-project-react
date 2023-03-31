@@ -60,6 +60,7 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_front:latest
             sudo docker-compose stop
             sudo docker-compose rm web
             touch .env
