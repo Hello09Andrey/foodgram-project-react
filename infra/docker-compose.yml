@@ -15,7 +15,7 @@ services:
       - .env
 
   web:
-    build: ../backend/foodgram/
+    image: andreybelousov/foofgram:latest
     restart: always
     volumes:
       - static_value:/app/static/
