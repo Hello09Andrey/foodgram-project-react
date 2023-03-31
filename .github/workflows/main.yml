@@ -59,6 +59,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
+            sudo docker pull ${{ secrets.DOCKER_USERNAME }}/foodgram_back:latest
             sudo docker-compose stop
             sudo docker-compose rm web
             touch .env
@@ -71,6 +72,9 @@ jobs:
             echo SECRET_KEY=${{ secrets.SECRET_KEY }} >> .env
             echo HOST=${{ secrets.HOST }} >> .env
             sudo docker-compose up -d
+            sudo docker-compose exec -T backend python manage.py migrate
+            sudo docker-compose exec -T backend python manage.py collectstatic --no-input
+
   send_message:
     runs-on: ubuntu-latest
     needs: deploy
