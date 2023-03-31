@@ -46,3 +46,4 @@ jobs:
           push: true
           context: backend/foodgram/
           tags: ${{ secrets.DOCKER_USERNAME }}/foofgram:latest
+
