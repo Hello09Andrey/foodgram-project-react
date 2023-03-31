@@ -1,7 +1,6 @@
 from django.db import models
 from django.db.models import UniqueConstraint
 from django.core.validators import MinValueValidator
-
 from users.models import CustomUser
 from django.conf import settings
 

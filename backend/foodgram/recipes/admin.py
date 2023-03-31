@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.contrib.admin import display
+
 from .models import (
     Tags,
     Ingredients,
@@ -7,7 +9,6 @@ from .models import (
     Favourites,
     ShoppingCart
 )
-from django.contrib.admin import display
 
 
 class RecipesAdmin(admin.ModelAdmin):
