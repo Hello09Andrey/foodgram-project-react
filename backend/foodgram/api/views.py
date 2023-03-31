@@ -8,8 +8,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
-from api.filters import RecipeFilter
-from api.serializers import (
+from .filters import RecipeFilter
+from .serializers import (
     FollowSerializer,
     CustomUserSerializer,
     TagsSerializer,
@@ -19,6 +19,8 @@ from api.serializers import (
     ShoppingListSerializer,
     FavoriteSerializer
 )
+from .utils import get_shopping_cart
+from .permissions import IsAuthorOrReadOnlyPermission
 from users.models import Follow, CustomUser
 from recipes.models import (
     Tags,
@@ -27,8 +29,6 @@ from recipes.models import (
     Favourites,
     ShoppingCart,
 )
-from api.utils import get_shopping_cart
-from api.permissions import IsAuthorOrReadOnlyPermission
 
 
 class CustomUserViewSet(UserViewSet):
@@ -77,6 +77,8 @@ class CustomUserViewSet(UserViewSet):
                                              author=author)
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(f'Вы не подписаны на {author}',
+                        status=status.HTTP_400_BAD_REQUEST)
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

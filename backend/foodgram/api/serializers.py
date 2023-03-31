@@ -5,7 +5,6 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
-
 from users.models import CustomUser, Follow
 from recipes.models import (
     Recipes,
