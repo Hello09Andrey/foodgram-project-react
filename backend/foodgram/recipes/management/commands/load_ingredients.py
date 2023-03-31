@@ -21,7 +21,7 @@ class Command(BaseCommand):
         print("Loading childrens data")
 
         for row in DictReader(
-            open('../../data/ingredients.csv', encoding="utf8")
+            open('../ingredients.csv', encoding="utf8")
         ):
             child = Ingredients(
                 name=row['name'],
