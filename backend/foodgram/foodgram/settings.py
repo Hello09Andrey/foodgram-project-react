@@ -8,7 +8,12 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'https://', 'http://localhost']
+CSRF_TRUSTED_ORIGINS = [
+    'http://127.0.0.1',
+    'https://',
+    'http://localhost',
+    'http://158.160.31.59',
+]
 
 AUTH_USER_MODEL = 'users.CustomUser'
 # Quick-start development settings - unsuitable for production
@@ -20,10 +25,7 @@ SECRET_KEY = os.getenv('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '*',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 LEN_NAME_IN_STR = 50
 
