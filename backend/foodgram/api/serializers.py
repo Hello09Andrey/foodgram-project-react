@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.db import transaction
-from rest_framework.fields import SerializerMethodField
+from rest_framework.fields import SerializerMethodField, IntegerField
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -164,9 +164,7 @@ class RecipesGetSerializer(serializers.ModelSerializer):
 class AddIngredientInSerializer(serializers.ModelSerializer):
     """Вспомогательный сериализатор для RecipesCreateSerializer"""
 
-    id = serializers.PrimaryKeyRelatedField(
-        queryset=Ingredients.objects.all()
-    )
+    id = IntegerField(write_only=True)
 
     class Meta:
         model = IngredientsRecipe
@@ -229,7 +227,7 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
                 raise ValidationError({
                     'ingredients': 'Ингридиенты не могут повторяться!'
                 })
-            if int(item['amount']) <= 0:
+            if int(item['amount']) < 1:
                 raise ValidationError({
                     'amount': 'Количество ингредиента должно быть больше 0!'
                 })
@@ -271,13 +269,13 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    # def to_representation(self, instance):
-    #     return representation(self.context, instance, RecipesGetSerializer)
     def to_representation(self, instance):
-        request = self.context.get('request')
-        context = {'request': request}
-        return RecipesGetSerializer(instance,
-                                    context=context).data
+        return representation(self.context, instance, RecipesGetSerializer)
+    # def to_representation(self, instance):
+    #     request = self.context.get('request')
+    #     context = {'request': request}
+    #     return RecipesGetSerializer(instance,
+    #                                 context=context).data
 
 
 class FavoriteSerializer(RecipeShortSerializer):
