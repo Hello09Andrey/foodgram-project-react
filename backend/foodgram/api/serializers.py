@@ -16,7 +16,6 @@ from recipes.models import (
     IngredientsRecipe
 )
 
-
 # class CustomUserCreateSerializer(UserCreateSerializer):
 #     """Сериализатор для создания объекта User"""
 
