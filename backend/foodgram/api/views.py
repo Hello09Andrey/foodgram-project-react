@@ -38,11 +38,6 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthorOrAdminOrReadOnlyPermission,)
 
-    # def get_serializer_class(self, request):
-    #     if self.action in ('list', 'retrieve'):
-    #         return CustomUserSerializer
-    #     return CustomUserCreateSerializer
-
     @action(
         detail=False,
         permission_classes=(IsAuthenticated,)

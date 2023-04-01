@@ -16,21 +16,6 @@ from recipes.models import (
     IngredientsRecipe
 )
 
-# class CustomUserCreateSerializer(UserCreateSerializer):
-#     """Сериализатор для создания объекта User"""
-
-#     class Meta:
-#         model = CustomUser
-#         fields = (
-#             tuple(CustomUser.REQUIRED_FIELDS) + (
-#                 CustomUser.USERNAME_FIELD,
-#                 'password',
-#             )
-#         )
-
-# def create(self, validated_data):
-#     return CustomUser.objects.create(**validated_data)
-
 
 class CustomUserSerializer(UserSerializer):
     """Cериализатор модели User"""
@@ -214,36 +199,40 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         tags = value
         if not tags:
-            raise serializers.ValidationError({
-                'tags': 'Добавьте тег.'
-            })
+            raise serializers.ValidationError(
+                {
+                    'tags': 'Добавьте тег.'
+                }
+            )
         tags_set = set()
         for tag in tags:
             if tag in tags_set:
-                raise serializers.ValidationError({
-                    'tags': f'Тег {tag} существует!'
-                })
+                raise serializers.ValidationError(
+                    {
+                        'tags': f'Тег {tag} существует!'
+                    }
+                )
             tags_set.add(tag)
         return value
 
     def validate_ingredients(self, value):
         ingredients = value
         if not ingredients:
-            raise serializers.ValidationError({
-                'ingredients': 'Добавьте ингредиенты.'
+            raise ValidationError({
+                'ingredients': 'Нужен хотя бы один ингредиент!'
             })
-        ingredients_set = set()
+        ingredients_list = []
         for item in ingredients:
             ingredient = get_object_or_404(Ingredients, id=item['id'])
-            if ingredient in ingredients_set:
+            if ingredient in ingredients_list:
                 raise ValidationError({
-                    'ingredients': f'Ингредиент {ingredient} существует.'
+                    'ingredients': 'Ингридиенты не могут повторяться!'
                 })
             if int(item['amount']) <= 0:
-                raise serializers.ValidationError({
+                raise ValidationError({
                     'amount': 'Количество ингредиента должно быть больше 0!'
                 })
-            ingredients_set.add(ingredient)
+            ingredients_list.append(ingredient)
         return value
 
     def add_ingredients(self, ingredients, recipe):
