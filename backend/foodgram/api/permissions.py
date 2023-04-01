@@ -1,7 +1,7 @@
 from rest_framework.permissions import SAFE_METHODS, BasePermission
 
 
-class IsAuthorOrReadOnlyPermission(BasePermission):
+class IsAuthorOrAdminOrReadOnlyPermission(BasePermission):
     """
     Анонимному пользователь может только читать.
     Полный доступ предоставляется только автору объекта и

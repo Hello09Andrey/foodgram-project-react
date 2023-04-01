@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 
 from .validators import validate_username
 
@@ -13,12 +14,12 @@ class CustomUser(AbstractUser):
     )
     first_name = models.CharField(
         'Имя',
-        max_length=150,
+        max_length=settings.MAX_LENGTH,
         blank=True
     )
     last_name = models.CharField(
         'Фамилия',
-        max_length=150,
+        max_length=settings.MAX_LENGTH,
         blank=True
     )
     username = models.CharField(
@@ -27,6 +28,11 @@ class CustomUser(AbstractUser):
         unique=True,
         validators=[validate_username]
     )
+
+    class Meta:
+        verbose_name = 'Пользователь'
+        verbose_name_plural = 'Пользователи'
+        ordering = ('id',)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
@@ -63,3 +69,4 @@ class Follow(models.Model):
                 name='unique_follower'
             )
         ]
+        ordering = ('id',)

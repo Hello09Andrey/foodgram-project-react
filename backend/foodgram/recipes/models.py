@@ -1,6 +1,6 @@
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.core.validators import MinValueValidator
+from django.core.validators import MinValueValidator, RegexValidator
 from users.models import CustomUser
 from django.conf import settings
 
@@ -8,11 +8,27 @@ from django.conf import settings
 class Tags(models.Model):
     """Модель списка тегов"""
 
-    name = models.CharField('Название', max_length=150, unique=True)
-    color = models.CharField('Цвет', max_length=7, unique=True)
+    name = models.CharField(
+        'Название',
+        max_length=settings.MAX_LENGTH,
+        unique=True
+    )
+    color = models.CharField(
+        'Цвет',
+        max_length=7,
+        unique=True,
+        validators=(
+            RegexValidator(
+                regex='^#[A-Fa-f0-9]{6}$',
+                code='wrong_hex_code',
+                message='Введенное значение не является цветом в формате HEX.'
+            ),
+        )
+    )
     slug = models.SlugField('Слаг', unique=True)
 
     class Meta:
+        ordering = ('id',)
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -23,7 +39,10 @@ class Tags(models.Model):
 class Ingredients(models.Model):
     """Модель ингредиентов"""
 
-    name = models.CharField('Название ингредиента', max_length=150)
+    name = models.CharField(
+        'Название ингредиента',
+        max_length=settings.MAX_LENGTH
+    )
     measurement_unit = models.CharField('Единицы измерения', max_length=25)
 
     class Meta:
@@ -61,7 +80,7 @@ class Recipes(models.Model):
         blank=True,
         help_text='Картинка'
     )
-    name = models.CharField('Название', max_length=200)
+    name = models.CharField('Название', max_length=settings.MAX_LENGTH)
     text = models.TextField('Описание')
     cooking_time = models.PositiveBigIntegerField(
         'Время приготовления',
@@ -83,6 +102,12 @@ class Recipes(models.Model):
         ordering = ('-pub_date',)
         verbose_name = 'Рецепт'
         verbose_name_plural = 'Рецепты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['author', 'name'],
+                name='unique_recipe'
+            )
+        ]
 
     def __str__(self) -> str:
         return self.name[:settings.LEN_NAME_IN_STR]

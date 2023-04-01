@@ -22,11 +22,10 @@ class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email',
-            'username',
-            'first_name',
-            'last_name',
-            'password'
+            tuple(CustomUser.REQUIRED_FIELDS) + (
+                CustomUser.USERNAME_FIELD,
+                'password',
+            )
         )
 
     def create(self, validated_data):
@@ -41,12 +40,11 @@ class CustomUserSerializer(UserSerializer):
     class Meta:
         model = CustomUser
         fields = (
-            'email',
-            'id',
-            'username',
-            'first_name',
-            'last_name',
-            'is_subscribed',
+            tuple(CustomUser.REQUIRED_FIELDS) + (
+                CustomUser.USERNAME_FIELD,
+                'id',
+                'is_subscribed',
+            )
         )
 
     def get_is_subscribed(self, obj):
@@ -91,11 +89,6 @@ class FollowSerializer(CustomUserSerializer):
     def validate(self, data):
         author = self.instance
         user = self.context.get('request').user
-        if Follow.objects.filter(author=author, user=user).exists():
-            raise ValidationError(
-                detail='Вы уже подписаны на этого пользователя!',
-                code=status.HTTP_400_BAD_REQUEST
-            )
         if user == author:
             raise ValidationError(
                 detail='Вы не можете подписаться на самого себя!',
@@ -247,19 +240,17 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({
                     'amount': 'Количество должно быть больше 0!'
                 })
-        cooking_time = data['cooking_time']
-        if int(cooking_time) < 1:
-            raise serializers.ValidationError({
-                'cooking_time': 'Время приготовления должно быть больше 0!'
-            })
         return data
 
     def add_ingredients(self, ingredients, recipe):
-        new_ingredients = [IngredientsRecipe(
-            recipe=recipe,
-            ingredient=ingredient['id'],
-            amount=ingredient['amount'],
-        ) for ingredient in ingredients]
+        new_ingredients = [
+            IngredientsRecipe(
+                recipe=recipe,
+                ingredient=ingredient['id'],
+                amount=ingredient['amount'],
+            )
+            for ingredient in ingredients
+        ]
         IngredientsRecipe.objects.bulk_create(new_ingredients)
 
     def add_tags(self, tags, recipe):

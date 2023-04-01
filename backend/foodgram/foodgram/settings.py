@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']
 
 LEN_NAME_IN_STR = 50
+MAX_LENGTH = 150
 
 # Application definition
 

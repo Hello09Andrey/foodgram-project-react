@@ -1,5 +1,5 @@
 from django_filters.rest_framework import FilterSet, filters
-from recipes.models import Tags, Recipes
+from recipes.models import Tags, Recipes, Ingredients
 
 FILTER_DATA = {
     'favorites': 'favorites__user',
@@ -39,3 +39,13 @@ class RecipeFilter(FilterSet):
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
         return self._get_queryset(queryset, name, value, 'shop_card')
+
+
+class IngredientFilter(FilterSet):
+    """Поиск по названию ингредиента."""
+
+    name = filters.CharFilter(lookup_expr='startswith')
+
+    class Meta:
+        model = Ingredients
+        fields = ('name',)

@@ -5,10 +5,10 @@ from djoser.views import UserViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from rest_framework import status, filters
+from rest_framework import status
 from django_filters.rest_framework import DjangoFilterBackend
 
-from .filters import RecipeFilter
+from .filters import RecipeFilter, IngredientFilter
 from .serializers import (
     FollowSerializer,
     CustomUserSerializer,
@@ -17,10 +17,11 @@ from .serializers import (
     RecipesGetSerializer,
     RecipesCreateSerializer,
     ShoppingListSerializer,
-    FavoriteSerializer
+    FavoriteSerializer,
+    CustomUserCreateSerializer,
 )
 from .utils import get_shopping_cart
-from .permissions import IsAuthorOrReadOnlyPermission
+from .permissions import IsAuthorOrAdminOrReadOnlyPermission
 from users.models import Follow, CustomUser
 from recipes.models import (
     Tags,
@@ -36,7 +37,12 @@ class CustomUserViewSet(UserViewSet):
 
     queryset = CustomUser.objects.all()
     serializer_class = CustomUserSerializer
-    permission_classes = (IsAuthorOrReadOnlyPermission,)
+    permission_classes = (IsAuthorOrAdminOrReadOnlyPermission,)
+
+    def get_serializer_class(self, request):
+        if request.method == 'GET':
+            return CustomUserSerializer
+        return CustomUserCreateSerializer
 
     @action(
         detail=False,
@@ -95,8 +101,9 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
 
     queryset = Ingredients.objects.all()
     serializer_class = IngredientsSerializer
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('^name',)
+    filter_backends = (DjangoFilterBackend, )
+    filterset_class = IngredientFilter
+    search_fields = ('^name', )
     pagination_class = None
     permission_classes = (AllowAny,)
 
@@ -107,7 +114,7 @@ class RecipesViewSet(viewsets.ModelViewSet):
     queryset = Recipes.objects.all()
     filter_backends = (DjangoFilterBackend,)
     filterset_class = RecipeFilter
-    permission_classes = (IsAuthorOrReadOnlyPermission,)
+    permission_classes = (IsAuthorOrAdminOrReadOnlyPermission,)
 
     def get_serializer_class(self):
         if self.action in ('list', 'retrieve'):
