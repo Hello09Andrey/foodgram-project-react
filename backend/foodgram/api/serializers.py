@@ -29,8 +29,8 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             )
         )
 
-    def create(self, validated_data):
-        return CustomUser.objects.create(**validated_data)
+    # def create(self, validated_data):
+    #     return CustomUser.objects.create(**validated_data)
 
 
 class CustomUserSerializer(UserSerializer):
