@@ -200,7 +200,7 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
     def validate_tags(self, value):
         tags = value
         if not tags:
-            raise serializers.ValidationError(
+            raise ValidationError(
                 {
                     'tags': 'Добавьте тег.'
                 }
@@ -208,7 +208,7 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
         tags_list = []
         for tag in tags:
             if tag in tags_list:
-                raise serializers.ValidationError(
+                raise ValidationError(
                     {
                         'tags': f'Тег {tag} существует!'
                     }
@@ -271,8 +271,13 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
+    # def to_representation(self, instance):
+    #     return representation(self.context, instance, RecipesGetSerializer)
     def to_representation(self, instance):
-        return representation(self.context, instance, RecipesGetSerializer)
+        request = self.context.get('request')
+        context = {'request': request}
+        return RecipesGetSerializer(instance,
+                                    context=context).data
 
 
 class FavoriteSerializer(RecipeShortSerializer):
