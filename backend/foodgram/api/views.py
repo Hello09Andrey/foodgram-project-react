@@ -18,7 +18,6 @@ from .serializers import (
     RecipesCreateSerializer,
     ShoppingListSerializer,
     FavoriteSerializer,
-    CustomUserCreateSerializer,
 )
 from .utils import get_shopping_cart
 from .permissions import IsAuthorOrAdminOrReadOnlyPermission
@@ -39,10 +38,10 @@ class CustomUserViewSet(UserViewSet):
     serializer_class = CustomUserSerializer
     permission_classes = (IsAuthorOrAdminOrReadOnlyPermission,)
 
-    def get_serializer_class(self, request):
-        if self.action in ('list', 'retrieve'):
-            return CustomUserSerializer
-        return CustomUserCreateSerializer
+    # def get_serializer_class(self, request):
+    #     if self.action in ('list', 'retrieve'):
+    #         return CustomUserSerializer
+    #     return CustomUserCreateSerializer
 
     @action(
         detail=False,
