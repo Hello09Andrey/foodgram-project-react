@@ -18,7 +18,6 @@ from .serializers import (
     RecipesCreateSerializer,
     ShoppingListSerializer,
     FavoriteSerializer,
-    CustomUserCreateSerializer,
 )
 from .utils import get_shopping_cart
 from .permissions import IsAuthorOrAdminOrReadOnlyPermission
