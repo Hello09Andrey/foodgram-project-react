@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.db.models import F
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from django.shortcuts import get_object_or_404
 from users.models import CustomUser, Follow
 from recipes.models import (
     Recipes,
@@ -48,10 +49,12 @@ class CustomUserSerializer(UserSerializer):
         )
 
     def get_is_subscribed(self, obj):
-        user = self.context.get('request').user
-        if user.is_anonymous:
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
             return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        return Follow.objects.filter(
+            user=request.user, author=obj
+        ).exists()
 
 
 class RecipeShortSerializer(serializers.ModelSerializer):
@@ -164,11 +167,11 @@ class RecipesGetSerializer(serializers.ModelSerializer):
         return self._obj_exists(obj, ShoppingCart)
 
     def _obj_exists(self, recipe, name_class):
-        user = self.context.get('request').user
-        if user.is_anonymous:
+        request = self.context.get('request')
+        if not request or request.user.is_anonymous:
             return False
         return name_class.objects.filter(
-            user=user,
+            user=request.user,
             recipes=recipe
         ).exists()
 
@@ -209,8 +212,8 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
             'cooking_time',
         )
 
-    def validate(self, data):
-        tags = data['tags']
+    def validate_tags(self, value):
+        tags = value
         if not tags:
             raise serializers.ValidationError({
                 'tags': 'Добавьте тег.'
@@ -222,25 +225,27 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
                     'tags': f'Тег {tag} существует!'
                 })
             tags_set.add(tag)
-        ingredients = data['ingredients']
-        ingredients_set = set()
+        return value
+
+    def validate_ingredients(self, value):
+        ingredients = value
         if not ingredients:
             raise serializers.ValidationError({
                 'ingredients': 'Добавьте ингредиенты.'
             })
-        for ingredient in ingredients:
-            ingredient_id = ingredient['id']
-            if ingredient_id in ingredients_set:
-                raise serializers.ValidationError({
+        ingredients_set = set()
+        for item in ingredients:
+            ingredient = get_object_or_404(Ingredients, id=item['id'])
+            if ingredient in ingredients_set:
+                raise ValidationError({
                     'ingredients': f'Ингредиент {ingredient} существует.'
                 })
-            ingredients_set.add(ingredient_id)
-            amount = ingredient['amount']
-            if int(amount) < 1:
+            if int(item['amount']) <= 0:
                 raise serializers.ValidationError({
-                    'amount': 'Количество должно быть больше 0!'
+                    'amount': 'Количество ингредиента должно быть больше 0!'
                 })
-        return data
+            ingredients_set.add(ingredient)
+        return value
 
     def add_ingredients(self, ingredients, recipe):
         new_ingredients = [
