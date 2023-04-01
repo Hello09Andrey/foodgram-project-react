@@ -4,7 +4,7 @@ from drf_extra_fields.fields import Base64ImageField
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
 from django.db.models import F
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
 from users.models import CustomUser, Follow
 from recipes.models import (
@@ -17,20 +17,20 @@ from recipes.models import (
 )
 
 
-class CustomUserCreateSerializer(UserCreateSerializer):
-    """Сериализатор для создания объекта User"""
+# class CustomUserCreateSerializer(UserCreateSerializer):
+#     """Сериализатор для создания объекта User"""
 
-    class Meta:
-        model = CustomUser
-        fields = (
-            tuple(CustomUser.REQUIRED_FIELDS) + (
-                CustomUser.USERNAME_FIELD,
-                'password',
-            )
-        )
+#     class Meta:
+#         model = CustomUser
+#         fields = (
+#             tuple(CustomUser.REQUIRED_FIELDS) + (
+#                 CustomUser.USERNAME_FIELD,
+#                 'password',
+#             )
+#         )
 
-    # def create(self, validated_data):
-    #     return CustomUser.objects.create(**validated_data)
+# def create(self, validated_data):
+#     return CustomUser.objects.create(**validated_data)
 
 
 class CustomUserSerializer(UserSerializer):
