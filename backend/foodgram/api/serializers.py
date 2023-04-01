@@ -205,15 +205,15 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
                     'tags': 'Добавьте тег.'
                 }
             )
-        tags_set = set()
+        tags_list = []
         for tag in tags:
-            if tag in tags_set:
+            if tag in tags_list:
                 raise serializers.ValidationError(
                     {
                         'tags': f'Тег {tag} существует!'
                     }
                 )
-            tags_set.add(tag)
+            tags_list.append(tag)
         return value
 
     def validate_ingredients(self, value):
@@ -238,15 +238,13 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
 
     @transaction.atomic
     def add_ingredients(self, ingredients, recipe):
-        new_ingredients = [
-            IngredientsRecipe(
-                recipe=recipe,
+        IngredientsRecipe.objects.bulk_create(
+            [IngredientsRecipe(
                 ingredient=Ingredients.objects.get(id=ingredient['id']),
-                amount=ingredient['amount'],
-            )
-            for ingredient in ingredients
-        ]
-        IngredientsRecipe.objects.bulk_create(new_ingredients)
+                recipe=recipe,
+                amount=ingredient['amount']
+            ) for ingredient in ingredients]
+        )
 
     @transaction.atomic
     def create(self, validated_data):
