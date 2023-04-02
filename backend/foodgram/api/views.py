@@ -72,13 +72,17 @@ class CustomUserViewSet(UserViewSet):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         if request.method == 'DELETE':
-            subscription = get_object_or_404(Follow,
-                                             user=user,
-                                             author=author)
+            subscription = get_object_or_404(
+                Follow,
+                user=user,
+                author=author
+            )
             subscription.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(f'Вы не подписаны на {author}',
-                        status=status.HTTP_400_BAD_REQUEST)
+        return Response(
+            f'Вы не подписаны на {author}',
+            status=status.HTTP_400_BAD_REQUEST
+        )
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):
@@ -131,11 +135,20 @@ class RecipesViewSet(viewsets.ModelViewSet):
         object.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def _create_or_destroy(self, http_method, recipe, key,
-                           model, serializer):
+    def _create_or_destroy(
+        self,
+        http_method,
+        recipe,
+        key,
+        model,
+        serializer
+    ):
         if http_method == 'POST':
-            return self.create_object(request=recipe, pk=key,
-                                      serializers=serializer)
+            return self.create_object(
+                request=recipe,
+                pk=key,
+                serializers=serializer
+            )
         return self.delete_object(request=recipe, pk=key, model=model)
 
     @action(

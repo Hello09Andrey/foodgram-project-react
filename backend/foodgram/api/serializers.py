@@ -7,6 +7,7 @@ from rest_framework.exceptions import ValidationError
 from django.db.models import F
 from djoser.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
+
 from users.models import CustomUser, Follow
 from recipes.models import (
     Recipes,
@@ -267,8 +268,10 @@ class RecipesCreateSerializer(serializers.ModelSerializer):
         instance.tags.clear()
         instance.tags.set(tags)
         instance.ingredients.clear()
-        self.create_ingredients_amounts(recipe=instance,
-                                        ingredients=ingredients)
+        self.create_ingredients_amounts(
+            recipe=instance,
+            ingredients=ingredients
+        )
         instance.save()
         return instance
 
@@ -287,7 +290,8 @@ class FavoriteSerializer(RecipeShortSerializer):
         return representation(
             self.context,
             instance.recipes,
-            RecipeShortSerializer)
+            RecipeShortSerializer
+        )
 
 
 class ShoppingListSerializer(RecipeShortSerializer):
@@ -301,7 +305,8 @@ class ShoppingListSerializer(RecipeShortSerializer):
         return representation(
             self.context,
             instance.recipes,
-            RecipeShortSerializer)
+            RecipeShortSerializer
+        )
 
 
 def representation(context, instance, serializer):
