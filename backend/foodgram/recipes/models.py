@@ -1,8 +1,7 @@
+from django.conf import settings
+from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 from django.db.models import UniqueConstraint
-from django.core.validators import MinValueValidator, RegexValidator
-
-from django.conf import settings
 from users.models import CustomUser
 
 

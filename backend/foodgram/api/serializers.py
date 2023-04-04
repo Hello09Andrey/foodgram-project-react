@@ -1,21 +1,20 @@
-from rest_framework import serializers
 from django.db import transaction
-from rest_framework.fields import SerializerMethodField, IntegerField
-from drf_extra_fields.fields import Base64ImageField
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
 from django.db.models import F
-from djoser.serializers import UserSerializer
 from django.shortcuts import get_object_or_404
+from djoser.serializers import UserSerializer
+from drf_extra_fields.fields import Base64ImageField
+from rest_framework import serializers, status
+from rest_framework.exceptions import ValidationError
+from rest_framework.fields import IntegerField, SerializerMethodField
 
 from users.models import CustomUser, Follow
 from recipes.models import (
-    Recipes,
-    Tags,
-    Ingredients,
     Favourites,
+    Ingredients,
+    IngredientsRecipe,
+    Recipes,
     ShoppingCart,
-    IngredientsRecipe
+    Tags
 )
 
 
