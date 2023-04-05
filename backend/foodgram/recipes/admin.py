@@ -24,7 +24,11 @@ class RecipesAdmin(admin.ModelAdmin):
     )
     filter_horizontal = ('tags',)
     readonly_fields = ('favorites',)
-    search_fields = ('name',)
+    search_fields = (
+        'author',
+        'name',
+        'tags',
+    )
 
     @display(description='Количество в избранных')
     def favorites(self, obj):
