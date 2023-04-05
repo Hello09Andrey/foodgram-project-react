@@ -13,6 +13,7 @@ class CustomUserAdmin(admin.ModelAdmin):
         'password',
     )
     list_filter = ('email', 'username')
+    search_fields = ('email', 'username')
 
 
 admin.site.register(CustomUser, CustomUserAdmin)
