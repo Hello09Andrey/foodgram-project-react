@@ -22,7 +22,6 @@ class RecipesAdmin(admin.ModelAdmin):
         'name',
         'tags',
     )
-    filter_horizontal = ('tags',)
     readonly_fields = ('favorites',)
     search_fields = (
         'author',
